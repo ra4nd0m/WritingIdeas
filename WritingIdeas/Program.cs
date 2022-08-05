@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WritingIdeas.Data;
+using WritingIdeas.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 
+builder.Services.AddScoped<IAuthorizationHandler, IsOwnerIdeaAuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, AdministratorAuthorizationHandler>();
 
 var app = builder.Build();
 
