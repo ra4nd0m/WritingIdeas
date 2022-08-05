@@ -21,6 +21,15 @@ builder.Services.AddScoped<IAuthorizationHandler, IsOwnerIdeaAuthorizationHandle
 builder.Services.AddSingleton<IAuthorizationHandler, AdministratorAuthorizationHandler>();
 
 var app = builder.Build();
+//add admin role for testing purposes
+using(var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+    string testPassword = "Passw0rd!"; //this is very very bad only for testing
+    await SeedDB.Initialize(services, testPassword);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
