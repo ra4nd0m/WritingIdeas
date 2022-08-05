@@ -16,12 +16,20 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
-
+//Auth handlers
 builder.Services.AddScoped<IAuthorizationHandler, IsOwnerIdeaAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, AdministratorAuthorizationHandler>();
 
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var services= scope.ServiceProvider;
+    var context= services.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+    string testPass = builder.Configuration.GetValue<string>("TestUser");
+    // dotnet user-secrets set "TestUser" <Pass>
+    await SeedAccounts.Initialize(services, testPass);
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
