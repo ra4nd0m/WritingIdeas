@@ -28,7 +28,8 @@ using (var scope = app.Services.CreateScope())
     context.Database.Migrate();
     string testPass = builder.Configuration.GetValue<string>("TestUser");
     // dotnet user-secrets set "TestUser" <Pass>
-    await SeedAccounts.Initialize(services, testPass);
+    if (context.Users.Count() == 0)
+        await SeedAccounts.Initialize(services, testPass);
 }
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
